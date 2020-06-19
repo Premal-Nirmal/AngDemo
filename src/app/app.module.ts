@@ -17,6 +17,7 @@ import { HeaderComponent } from './header/header.component';
 import { postListComponent } from './posts/post-list/post-list.component';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
