@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const app = express();
 const Post = require('./models/post'); // this is to include the Post.js file from backend/module.
+const { Console } = require('console');
 
 mongoose.connect("mongodb+srv://premal:80c5gScOSS5RD1Hw@cluster0.f7wyp.mongodb.net/node-angular_db?retryWrites=true&w=majority",{ useNewUrlParser: true , useUnifiedTopology: true })
 .then(()=>{
@@ -31,12 +32,14 @@ app.post("/api/posts",(req,res,next) => {
     title: req.body.title,
     content: req.body.content
   });
-  post.save(); // the save() function saves the data in the db
-
-  //console.log(post);
-  res.status(201).json({
-    message: 'post added successfully'
+  post.save().then(createPost =>{ // the save() function saves the data in the db
+    res.status(201).json({
+      message: 'post added successfully',
+      postId: createPost._id
+    });
   });
+
+
 });
 
 app.get('/api/posts', (_req, res) =>{
@@ -46,6 +49,17 @@ app.get('/api/posts', (_req, res) =>{
       message: "Posts fetched successfully!!!",
       posts: documents
     });
+  });
+});
+
+app.delete('/api/posts/:id',(req, res)=>{
+
+  Post.deleteOne({_id: req.params.id}).then(result => { // the params stores all the request paramiters.
+    console.log(result);
+
+    res.status(200).json({
+      message: "Posts Deleted successfully!!!",
+       });
   });
 });
 
