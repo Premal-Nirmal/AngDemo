@@ -22,7 +22,7 @@ app.use((_req,res,next) => {
   res.setHeader('Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Acccept'); // gives the access control for the page to send or receive data.
   res.setHeader('Access-Control-Allow-Methods',
-  'GET, POST, PATCH, DELETE, OPTIONS');
+  'GET, POST, PATCH, PUT, DELETE, OPTIONS');
   next();
 });
 
@@ -38,8 +38,18 @@ app.post("/api/posts",(req,res,next) => {
       postId: createPost._id
     });
   });
+});
 
-
+app.put("/api/posts/:id", (req,res,next)=> {
+  const post = new Post({ // the post is an mongoose.model which adds the data as per the schema from backend/model/post.js file
+    _id : req.body.id,
+    title: req.body.title,
+    content: req.body.content
+  });
+  Post.updateOne({_id: req.params.id}, post ).then(result =>{
+    //console.log(result);
+    res.status(200).json({message: 'Post edited successfully'});
+  });
 });
 
 app.get('/api/posts', (_req, res) =>{
@@ -50,6 +60,16 @@ app.get('/api/posts', (_req, res) =>{
       posts: documents
     });
   });
+});
+
+app.get('/api/post/:id',(req,res,next)=>{
+  Post.findById(req.params.id).then(post =>{
+    if(post){
+      res.status(200).json(post);
+    } else {
+      res.status(404).json({message: 'Post not found!!!'});
+    }
+   });
 });
 
 app.delete('/api/posts/:id',(req, res)=>{
